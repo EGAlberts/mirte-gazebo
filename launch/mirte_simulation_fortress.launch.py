@@ -17,72 +17,38 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
-from launch.conditions import LaunchConfigurationEquals
-from launch.conditions import LaunchConfigurationNotEquals
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command
+from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
-from launch_ros.actions import Node
-from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
   # Use simulation time
-  use_sim_time = LaunchConfiguration("use_sim_time", default='true')
-  headless = LaunchConfiguration('headless')
+  world = LaunchConfiguration('world')
 
   headless_arg = DeclareLaunchArgument(
     'headless',
     default_value='False',
     description='headless simulation'
   )
-  
+
   use_sim_time_arg = DeclareLaunchArgument(
     'use_sim_time',
     default_value='true',
     description='Use simulation (Gazebo) clock if true'
   )
 
-  world = PathJoinSubstitution([
+  world_path = PathJoinSubstitution([
     FindPackageShare('mirte_gazebo'),
     'worlds',
     'empty.world'
   ])
-
-  robot_description = ParameterValue(
-    Command([
-      'xacro ', 
-      PathJoinSubstitution([
-        FindPackageShare('mirte_master_description'), 'urdf', 'mirte_master.xacro'
-      ])
-    ]),
-    value_type=str
-  )
-
-  node_robot_state_publisher = Node(
-    package='robot_state_publisher',
-    executable='robot_state_publisher',
-    name='robot_state_publisher',
-    output='screen',
-    parameters=[{
-        'use_sim_time': use_sim_time,
-        'robot_description' : robot_description
-    }]
-  )
-
-  gz_spawn_entity = Node(
-    package='ros_gz_sim',
-    executable='create',
-    arguments=[
-        '-topic', 'robot_description',
-        '-x', '0',
-        '-y', '0',
-        '-z', '0.1',
-        '-name', 'mirte_master'
-    ],
-    output='screen',
+  world_arg = DeclareLaunchArgument(
+    'world',
+    default_value=world_path,
+    description='Gazebo world'
   )
 
   gz_sim = IncludeLaunchDescription(
@@ -94,39 +60,22 @@ def generate_launch_description():
       ])
     ),
     launch_arguments={'gz_args' : ['-r ', world, ' --verbose']}.items(),
-    # launch_arguments={'gz_args' : ['--verbose']}.items(),
   )
 
-  mirte_controllers = Node(
-    package='controller_manager',
-    executable='spawner',
-    arguments=['mirte_base_controller', 'mirte_arm_controller', 'mirte_gripper_controller'],
-    parameters=[{
-      'use_sim_time': use_sim_time,
-    }]
-  )
-
-  ros_gz_bridge_params = PathJoinSubstitution([
-    FindPackageShare('mirte_gazebo'),
-    'config', 
-    'ros_gz_bridge.yaml'
-  ])
-
-  ros_gz_bridge = Node(
-    package="ros_gz_bridge",
-    executable="parameter_bridge",
-    parameters=[{
-        'config_file' : ros_gz_bridge_params,
-    }],
-    output="screen",
+  pkg_mirte_gazebo = get_package_share_directory(
+        'mirte_gazebo')
+  spawn_mirte_master_path = os.path.join(
+      pkg_mirte_gazebo,
+      'launch',
+      'spawn_mirte_master.launch.xml')
+  spawn_mirte_master = IncludeLaunchDescription(
+    XMLLaunchDescriptionSource(spawn_mirte_master_path),
   )
 
   return LaunchDescription([
     headless_arg,
     use_sim_time_arg,
+    world_arg,
     gz_sim,
-    node_robot_state_publisher,
-    gz_spawn_entity,
-    mirte_controllers,
-    ros_gz_bridge,
+    spawn_mirte_master,
   ])
