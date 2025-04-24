@@ -3,7 +3,7 @@
   <!-- location and orientantion arguments -->
   <arg name="x" default="0"/>
   <arg name="y" default="0"/>
-  <arg name="z" default="0.1"/>
+  <arg name="z" default="0"/>
   <arg name="roll" default="0"/>
   <arg name="pitch" default="0"/>
   <arg name="yaw" default="0"/>
@@ -13,7 +13,7 @@
 
   <!-- MIRTE master specific arguments -->
   <arg name="arm_enable" default="True"/>
-  <arg name="sonar_enable" default="True"/>
+  <arg name="sonar_enable" default="False"/>
   <arg name="lidar_enable" default="True"/>
   <arg name="depth_camera_enable" default="True"/>
 

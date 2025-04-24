@@ -46,10 +46,10 @@
   gz_type_name: "gz.msgs.Twist"
   direction: ROS_TO_GZ
 
-- ros_topic_name: "/mirte_base_controller/odom"
-  gz_topic_name: "/odometry"
+- ros_topic_name: "/odom"
+  gz_topic_name: "/odom"
   ros_type_name: "nav_msgs/msg/Odometry"
-  gz_type_name: "gz.msgs.Odometry"
+  gz_type_name: "gz.msgs.OdometryWithCovariance"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "joint_states"
