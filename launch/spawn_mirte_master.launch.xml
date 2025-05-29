@@ -35,5 +35,7 @@
     <node pkg="ros_gz_bridge" exec="parameter_bridge">
       <param name="config_file" value="$(find-pkg-share mirte_gazebo)/config/ros_gz_bridge.yaml"/>
     </node>
+    <node pkg="ros_gz_image" exec="image_bridge" args="/rgbd_camera/image" />
+    <node pkg="ros_gz_image" exec="image_bridge" args="/rgbd_camera/depth_image" />
   </group>
 </launch>
