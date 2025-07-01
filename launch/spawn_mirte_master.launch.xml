@@ -25,7 +25,7 @@
       pkg="controller_manager" 
       exec="spawner" 
       output="screen"
-      args="joint_state_broadcaster mirte_base_controller mirte_master_arm_controller mirte_master_gripper_controller">
+      args="--switch-timeout 15 joint_state_broadcaster mirte_base_controller mirte_master_arm_controller mirte_master_gripper_controller">
       <param name="use_sim_time" value="true" />
     </node>
     <node pkg="ros_gz_bridge" exec="parameter_bridge">
