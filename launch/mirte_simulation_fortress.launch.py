@@ -27,6 +27,7 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
   # Use simulation time
   world = LaunchConfiguration('world')
+  use_sim_time = LaunchConfiguration('use_sim_time')
 
   headless_arg = DeclareLaunchArgument(
     'headless',
@@ -36,7 +37,7 @@ def generate_launch_description():
 
   use_sim_time_arg = DeclareLaunchArgument(
     'use_sim_time',
-    default_value='true',
+    default_value='True',
     description='Use simulation (Gazebo) clock if true'
   )
 
@@ -70,6 +71,7 @@ def generate_launch_description():
       'spawn_mirte_master.launch.xml')
   spawn_mirte_master = IncludeLaunchDescription(
     XMLLaunchDescriptionSource(spawn_mirte_master_path),
+    launch_arguments={'use_sim_time': use_sim_time}.items()
   )
 
   return LaunchDescription([
