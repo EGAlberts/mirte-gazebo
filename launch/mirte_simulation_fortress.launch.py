@@ -22,7 +22,7 @@ from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
-
+from launch_ros.actions import Node
 
 def generate_launch_description():
   # Use simulation time
@@ -74,10 +74,25 @@ def generate_launch_description():
     launch_arguments={'use_sim_time': use_sim_time}.items()
   )
 
+  mirte_laser_filters = Node(
+    package='laser_filters',
+    executable='scan_to_scan_filter_chain',
+    remappings=[
+      ('/scan', '/scan_unfiltered'),
+      ('/scan_filtered', '/scan'),
+    ],
+    parameters=[
+      PathJoinSubstitution([
+        get_package_share_directory('mirte_gazebo'),
+        'config', 'laser_filter.yaml',
+      ])],
+  )
+
   return LaunchDescription([
     headless_arg,
     use_sim_time_arg,
     world_arg,
     gz_sim,
     spawn_mirte_master,
+    mirte_laser_filters,
   ])
