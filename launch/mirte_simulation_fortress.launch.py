@@ -22,6 +22,7 @@ from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
+from launch_ros.actions import Node
 
 
 def generate_launch_description():
@@ -74,10 +75,21 @@ def generate_launch_description():
     launch_arguments={'use_sim_time': use_sim_time}.items()
   )
 
+  arm_nav_home_publisher_node = Node(
+    package='mirte_master_arm_control',
+    executable='arm_home_publisher',
+    parameters=[
+      PathJoinSubstitution([
+        get_package_share_directory('mirte_master_arm_control'),
+        'config', 'arm_nav_home_position.yml',
+      ])],
+  )
+
   return LaunchDescription([
     headless_arg,
     use_sim_time_arg,
     world_arg,
     gz_sim,
     spawn_mirte_master,
+    arm_nav_home_publisher_node,
   ])
