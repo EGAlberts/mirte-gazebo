@@ -24,6 +24,7 @@ from launch.substitutions import PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node
 
+
 def generate_launch_description():
   # Use simulation time
   world = LaunchConfiguration('world')
@@ -85,6 +86,16 @@ def generate_launch_description():
       PathJoinSubstitution([
         get_package_share_directory('mirte_gazebo'),
         'config', 'laser_filter.yaml',
+      ])]
+  )
+  
+  arm_nav_home_publisher_node = Node(
+    package='mirte_master_arm_control',
+    executable='arm_home_publisher',
+    parameters=[
+      PathJoinSubstitution([
+        get_package_share_directory('mirte_master_arm_control'),
+        'config', 'arm_nav_home_position.yml',
       ])],
   )
 
@@ -95,4 +106,5 @@ def generate_launch_description():
     gz_sim,
     spawn_mirte_master,
     mirte_laser_filters,
+    arm_nav_home_publisher_node,
   ])
