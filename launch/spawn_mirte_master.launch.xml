@@ -3,7 +3,7 @@
   <!-- location and orientantion arguments -->
   <arg name="x" default="0"/>
   <arg name="y" default="0"/>
-  <arg name="z" default="0.1"/>
+  <arg name="z" default="0"/>
   <arg name="roll" default="0"/>
   <arg name="pitch" default="0"/>
   <arg name="yaw" default="0"/>
@@ -13,7 +13,7 @@
 
   <!-- MIRTE master specific arguments -->
   <arg name="arm_enable" default="True"/>
-  <arg name="sonar_enable" default="True"/>
+  <arg name="sonar_enable" default="False"/>
   <arg name="lidar_enable" default="True"/>
   <arg name="depth_camera_enable" default="True"/>
 
@@ -24,6 +24,7 @@
       <param name="use_sim_time" value="true"/>
     </node>
     <node name="spawn_urdf" pkg="ros_gz_sim" exec="create" output="screen" args="-topic $(var ns_1)/robot_description -name mirte -b -robot_namespace $(var ns_1) -unpause -x $(var x) -y $(var y) -z $(var z) -R $(var roll) -P $(var pitch) -Y $(var yaw)">        
+      <param name="use_sim_time" value="true" />
     </node>
     <node 
       pkg="controller_manager" 
@@ -34,6 +35,7 @@
     </node>
     <node pkg="ros_gz_bridge" exec="parameter_bridge">
       <param name="config_file" value="$(find-pkg-share mirte_gazebo)/config/ros_gz_bridge.yaml"/>
+      <param name="use_sim_time" value="true" />
     </node>
   </group>
 </launch>
