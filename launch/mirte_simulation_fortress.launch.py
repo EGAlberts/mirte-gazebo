@@ -22,11 +22,12 @@ from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
-
+from launch_ros.actions import Node
 
 def generate_launch_description():
   # Use simulation time
   world = LaunchConfiguration('world')
+  use_sim_time = LaunchConfiguration('use_sim_time')
 
   headless_arg = DeclareLaunchArgument(
     'headless',
@@ -59,7 +60,7 @@ def generate_launch_description():
         'ign_gazebo.launch.py',
       ])
     ),
-    launch_arguments={'gz_args' : ['-r ', world, ' --verbose']}.items(),
+    launch_arguments={'gz_args' : ['-r ', world, ' -v 4']}.items(),
   )
 
   pkg_mirte_gazebo = get_package_share_directory(
@@ -70,6 +71,17 @@ def generate_launch_description():
       'spawn_mirte_master.launch.xml')
   spawn_mirte_master = IncludeLaunchDescription(
     XMLLaunchDescriptionSource(spawn_mirte_master_path),
+    launch_arguments={'use_sim_time': use_sim_time}.items()
+  )
+
+  arm_nav_home_publisher_node = Node(
+    package='mirte_master_arm_control',
+    executable='arm_home_publisher',
+    parameters=[
+      PathJoinSubstitution([
+        get_package_share_directory('mirte_master_arm_control'),
+        'config', 'arm_nav_home_position.yml',
+      ])],
   )
 
   return LaunchDescription([
@@ -78,4 +90,5 @@ def generate_launch_description():
     world_arg,
     gz_sim,
     spawn_mirte_master,
+    arm_nav_home_publisher_node,
   ])
