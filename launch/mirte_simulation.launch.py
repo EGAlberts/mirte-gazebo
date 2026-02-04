@@ -42,9 +42,9 @@ def generate_launch_description():
   )
 
   world_path = PathJoinSubstitution([
-    FindPackageShare('mirte_gazebo'),
+    FindPackageShare('aws_robomaker_small_warehouse_world'),
     'worlds',
-    'empty.world'
+    'no_roof_small_warehouse/no_roof_small_warehouse.world'
   ])
   world_arg = DeclareLaunchArgument(
     'world',
@@ -55,9 +55,9 @@ def generate_launch_description():
   gz_sim = IncludeLaunchDescription(
     PythonLaunchDescriptionSource(
       PathJoinSubstitution([
-        FindPackageShare('ros_ign_gazebo'),
+        FindPackageShare('ros_gz_sim'),
         'launch',
-        'ign_gazebo.launch.py',
+        'gz_sim.launch.py',
       ])
     ),
     launch_arguments={'gz_args' : ['-r ', world, ' -v 4']}.items(),
