@@ -90,5 +90,5 @@ def generate_launch_description():
     world_arg,
     gz_sim,
     spawn_mirte_master,
-    arm_nav_home_publisher_node,
+    # arm_nav_home_publisher_node,
   ])
